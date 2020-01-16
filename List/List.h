@@ -132,7 +132,7 @@ bool List<T>::Insert(int i, T& x)//新元素x插入到第i个结点之后
 	newNode->link = current->link;//链接在current之后
 	current->link = newNode;
 	return true;
-}
+};
 
 template<class T>
 bool List<T>::Remove(int i, T& x)//链表中第i个元素删去，通过该元素返回该元素的值
