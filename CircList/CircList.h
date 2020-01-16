@@ -18,8 +18,9 @@ class CircList
 public:
 	CircList(const T& x);//构造函数
 	CircList(CircList<T>& L);//复制构造函数
-	~CircList();//析构函数
+	~CircList() { makeEmpty(); }//析构函数
 	int length()const;//计算表长
+	void makeEmpty();//置空表
 	bool IsEmpty() { return first->link == first ? true : false; }
 	CircListNode<T>* getHead()const { return first; }//返回附加头结点地址
 	CircListNode<T>* getRear()const { return last; }//返回尾指针
@@ -30,6 +31,9 @@ public:
 	void setData(int i, T& x);//设置第i个元素的值
 	bool Insert(int i, T& x);//在第i个元素后插入x
 	bool Remove(int i, T& x);//删除第个元素，并通过x返回被删元素的值
+	void inputFront(T endTag);
+	void inputRear(T endTag);
+	void output();
 private:
 	CircListNode<T>* first, * last;//头指针、尾指针
 };
@@ -37,7 +41,7 @@ private:
 template<class T>
 CircList<T>::CircList(const T& x)//构造函数
 {
-	first = new CircListNode<T>;//first指向附加头结点
+	first = new CircListNode<T>(x);//first指向附加头结点
 	last = first;
 	last->link = first;//尾指针last指向附加头结点
 };
@@ -60,17 +64,18 @@ CircList<T>::CircList(CircList<T>& L)//复制构造函数
 };
 
 template<class T>
-CircList<T>::~CircList()//析构函数，置链表为空表
+void CircList<T>::makeEmpty()
 {
-	CircListNode<T> *q=NULL;
+	CircListNode<T>* q = NULL;
+	last = Locate(length());last->link = first;//设置尾指针
 	while (first->link != first)//链不空时，删掉所有结点
 	{
-		if (q == NULL) break;//尾指针指向附加头结点
+		//if (q == NULL) break;//尾指针指向附加头结点
 		q = first->link;
 		first->link = q->link;//从链删摘下被删结点
 		delete q;
 	}
-	last = first;last->link = first;//设置尾指针
+	last = first;last->link = first;//设置尾指针	
 }
 
 template<class T>
@@ -165,3 +170,52 @@ bool CircList<T> ::Remove(int i, T& x)//将链表第i个元素删去，并通过x返回被删元素
 	x = del->data;delete del;//取值
 	return true;
 }
+
+
+template<class T>
+void CircList<T>::output()//单链表按逻辑顺序输出到屏幕上
+{
+	CircListNode<T>* current = first->link;
+	while (current != first)
+	{
+		cout << current->data << " ";
+		current = current->link;
+	}
+	cout << endl;
+};
+
+template<class T>
+void CircList<T> ::inputFront(T endTag)//前插法建立单链表，engTag是输入序列的结束标志
+{
+	CircListNode<T>* newNode;T val;
+	makeEmpty();
+	cout << "请输入要插入的元素：\n";
+	cin >> val;
+	while (val != endTag)
+	{
+		newNode = new CircListNode<T>(val);//创建新结点
+		if (newNode == NULL) { cerr << "存储分配错误！\n"; exit(1); }
+		newNode->link = first->link;
+		first->link = newNode;//插入到表的前端
+		last = Locate(length());last->link = first;
+		cin >> val;
+	}
+};
+
+template<class T>
+void CircList<T>::inputRear(T endTag)
+{
+	CircListNode<T>* newNode;T val;
+	makeEmpty();
+	cout << "请输入要插入的元素：\n";
+	cin >> val;
+	//last = first;
+	while (val != endTag)//last指向表尾
+	{
+		newNode = new CircListNode<T>(val);//创建新结点
+		if (newNode == NULL) { cerr << "存储分配错误！\n"; exit(1); }
+		last->link = newNode;last = newNode;//插入到表末端
+		last->link = first;
+		cin >> val;
+	}
+};
